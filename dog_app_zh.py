@@ -60,7 +60,7 @@
 # - `train_targets`, `valid_targets`, `test_targets` - 包含独热编码分类标签的numpy数组
 # - `dog_names` - 由字符串构成的与标签相对应的狗的种类
 
-# In[7]:
+# In[1]:
 
 
 from sklearn.datasets import load_files       
@@ -95,7 +95,7 @@ print('There are %d test dog images.'% len(test_files))
 # 
 # 在下方的代码单元中，我们导入人脸图像数据集，文件所在路径存储在名为 `human_files` 的 numpy 数组。
 
-# In[8]:
+# In[2]:
 
 
 import random
@@ -117,7 +117,7 @@ print('There are %d total human images.' % len(human_files))
 # 
 # 在如下代码单元中，我们将演示如何使用这个检测模型在样本图像中找到人脸。
 
-# In[9]:
+# In[3]:
 
 
 import cv2                
@@ -160,7 +160,7 @@ plt.show()
 # 
 # 我们可以将这个程序封装为一个函数。该函数的输入为人脸图像的**路径**，当图像中包含人脸时，该函数返回 `True`，反之返回 `False`。该函数定义如下所示。
 
-# In[10]:
+# In[4]:
 
 
 # 如果img_path路径表示的图像检测到了脸，返回"True" 
@@ -186,7 +186,7 @@ def face_detector(img_path):
 # 
 # 理想情况下，人图像中检测到人脸的概率应当为100%，而狗图像中检测到人脸的概率应该为0%。你会发现我们的算法并非完美，但结果仍然是可以接受的。我们从每个数据集中提取前100个图像的文件路径，并将它们存储在`human_files_short`和`dog_files_short`中。
 
-# In[11]:
+# In[5]:
 
 
 human_files_short = human_files[:100]
@@ -222,7 +222,7 @@ print('dog_files 的前100张图像中，能够检测到人脸的图像占{}%.'.
 # 
 # 我们建议在你的算法中使用opencv的人脸检测模型去检测人类图像，不过你可以自由地探索其他的方法，尤其是尝试使用深度学习来解决它:)。请用下方的代码单元来设计和测试你的面部监测算法。如果你决定完成这个_选做_任务，你需要报告算法在每一个数据集上的表现。
 
-# In[12]:
+# In[6]:
 
 
 ## (选做) TODO: 报告另一个面部检测算法在LFW数据集上的表现
@@ -238,7 +238,7 @@ print('dog_files 的前100张图像中，能够检测到人脸的图像占{}%.'.
 # 
 # ImageNet 这目前一个非常流行的数据集，常被用来测试图像分类等计算机视觉任务相关的算法。它包含超过一千万个 URL，每一个都链接到 [1000 categories](https://gist.github.com/yrevar/942d3a0ac09ec9e5eb3a) 中所对应的一个物体的图像。任给输入一个图像，该 ResNet-50 模型会返回一个对图像中物体的预测结果。
 
-# In[13]:
+# In[7]:
 
 
 from keras.applications.resnet50 import ResNet50
@@ -260,7 +260,7 @@ ResNet50_model = ResNet50(weights='imagenet')
 # 
 # - `paths_to_tensor` 函数将图像路径的字符串组成的 numpy 数组作为输入，并返回一个4维张量，各维度尺寸为 `(nb_samples, 224, 224, 3)`。 在这里，`nb_samples`是提供的图像路径的数据中的样本数量或图像数量。你也可以将 `nb_samples` 理解为数据集中3维张量的个数（每个3维张量表示一个不同的图像。
 
-# In[14]:
+# In[8]:
 
 
 from keras.preprocessing import image                  
@@ -293,7 +293,7 @@ def paths_to_tensor(img_paths):
 # 通过对预测出的向量取用 argmax 函数（找到有最大概率值的下标序号），我们可以得到一个整数，即模型预测到的物体的类别。进而根据这个 [清单](https://gist.github.com/yrevar/942d3a0ac09ec9e5eb3a)，我们能够知道这具体是哪个品种的狗狗。
 # 
 
-# In[15]:
+# In[9]:
 
 
 from keras.applications.resnet50 import preprocess_input, decode_predictions
@@ -310,7 +310,7 @@ def ResNet50_predict_labels(img_path):
 # 
 # 我们通过这些想法来完成下方的 `dog_detector` 函数，如果从图像中检测到狗就返回 `True`，否则返回 `False`。
 
-# In[16]:
+# In[10]:
 
 
 def dog_detector(img_path):
@@ -330,7 +330,7 @@ def dog_detector(img_path):
 # - `human_files_short`中图像检测到狗狗的百分比？
 # - `dog_files_short`中图像检测到狗狗的百分比？
 
-# In[17]:
+# In[11]:
 
 
 ### TODO: 测试dog_detector函数在human_files_short和dog_files_short的表现
@@ -381,7 +381,7 @@ print('dog_files_short中图像检测到狗狗占{}%。'.format(dogs_in_dogs))
 # 
 # 通过对每张图像的像素值除以255，我们对图像实现了归一化处理。
 
-# In[18]:
+# In[12]:
 
 
 from PIL import ImageFile                            
@@ -418,7 +418,7 @@ test_tensors = paths_to_tensor(test_files).astype('float32')/255
 # 根据上图搭建了CNN模型。
 # 此模型由3个连续的卷积层-池化层结构组成，卷积层的过滤器个数是16-32-64递增，从前到后卷积层提取的输入特征越来越多，通过反向传播不断优化权重参数。卷积层后面的池化层降低了数据的空间维度，有利于减少出现过拟合的情况。
 
-# In[19]:
+# In[13]:
 
 
 from keras.layers import Conv2D, MaxPooling2D, GlobalAveragePooling2D
@@ -440,7 +440,7 @@ model.add(Dense(units=133,activation='softmax'))
 model.summary()
 
 
-# In[20]:
+# In[14]:
 
 
 ## 编译模型
@@ -464,7 +464,7 @@ model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['ac
 # 
 # 
 
-# In[32]:
+# In[15]:
 
 
 from keras.callbacks import ModelCheckpoint  
@@ -477,12 +477,12 @@ epochs = 5
 
 checkpointer = ModelCheckpoint(filepath='saved_models/weights.best.from_scratch.hdf5', 
                                verbose=1, save_best_only=True)
-model.fit(train_tensors, train_targets, 
+his = model.fit(train_tensors, train_targets, 
           validation_data=(valid_tensors, valid_targets),
           epochs=epochs, batch_size=20, callbacks=[checkpointer], verbose=1)
 
 
-# In[33]:
+# In[16]:
 
 
 ## 加载具有最好验证loss的模型
@@ -494,7 +494,7 @@ model.load_weights('saved_models/weights.best.from_scratch.hdf5')
 # 
 # 在狗图像的测试数据集上试用你的模型。确保测试准确率大于1%。
 
-# In[34]:
+# In[17]:
 
 
 # 获取测试数据集中每一个图像所预测的狗品种的index
@@ -503,6 +503,33 @@ dog_breed_predictions = [np.argmax(model.predict(np.expand_dims(tensor, axis=0))
 # 报告测试准确率
 test_accuracy = 100*np.sum(np.array(dog_breed_predictions)==np.argmax(test_targets, axis=1))/len(dog_breed_predictions)
 print('Test accuracy: %.4f%%' % test_accuracy)
+
+
+# In[18]:
+
+
+print(his.history.keys())
+
+
+# In[19]:
+
+
+# summarize history for accuracy
+plt.plot(his.history['acc'])
+plt.plot(his.history['val_acc'])
+plt.title('model accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
+# summarize history for loss
+plt.plot(his.history['loss'])
+plt.plot(his.history['val_loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
 
 
 # ---
@@ -515,7 +542,7 @@ print('Test accuracy: %.4f%%' % test_accuracy)
 
 # ### 得到从图像中提取的特征向量（Bottleneck Features）
 
-# In[35]:
+# In[20]:
 
 
 bottleneck_features = np.load('/data/bottleneck_features/DogVGG16Data.npz')
@@ -528,7 +555,7 @@ test_VGG16 = bottleneck_features['test']
 # 
 # 该模型使用预训练的 VGG-16 模型作为固定的图像特征提取器，其中 VGG-16 最后一层卷积层的输出被直接输入到我们的模型。我们只需要添加一个全局平均池化层以及一个全连接层，其中全连接层使用 softmax 激活函数，对每一个狗的种类都包含一个节点。
 
-# In[36]:
+# In[21]:
 
 
 VGG16_model = Sequential()
@@ -538,7 +565,7 @@ VGG16_model.add(Dense(133, activation='softmax'))
 VGG16_model.summary()
 
 
-# In[37]:
+# In[22]:
 
 
 ## 编译模型
@@ -546,7 +573,7 @@ VGG16_model.summary()
 VGG16_model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
 
 
-# In[38]:
+# In[23]:
 
 
 ## 训练模型
@@ -554,13 +581,34 @@ VGG16_model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metric
 checkpointer = ModelCheckpoint(filepath='saved_models/weights.best.VGG16.hdf5', 
                                verbose=1, save_best_only=True)
 
-VGG16_model.fit(train_VGG16, train_targets, 
+vgg_fit = VGG16_model.fit(train_VGG16, train_targets, 
           validation_data=(valid_VGG16, valid_targets),
           epochs=20, batch_size=20, callbacks=[checkpointer], verbose=1)
 
 
 
-# In[39]:
+# In[24]:
+
+
+# summarize history for accuracy
+plt.plot(vgg_fit.history['acc'])
+plt.plot(vgg_fit.history['val_acc'])
+plt.title('model accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
+# summarize history for loss
+plt.plot(vgg_fit.history['loss'])
+plt.plot(vgg_fit.history['val_loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
+
+
+# In[25]:
 
 
 ## 加载具有最好验证loss的模型
@@ -571,7 +619,7 @@ VGG16_model.load_weights('saved_models/weights.best.VGG16.hdf5')
 # ### 测试模型
 # 现在，我们可以测试此CNN在狗图像测试数据集中识别品种的效果如何。我们在下方打印出测试准确率。
 
-# In[40]:
+# In[26]:
 
 
 # 获取测试数据集中每一个图像所预测的狗品种的index
@@ -584,7 +632,7 @@ print('Test accuracy: %.4f%%' % test_accuracy)
 
 # ### 使用模型预测狗的品种
 
-# In[41]:
+# In[27]:
 
 
 from extract_bottleneck_features import *
@@ -627,7 +675,7 @@ def VGG16_predict_breed(img_path):
 #     valid_{network} = bottleneck_features['valid']
 #     test_{network} = bottleneck_features['test']
 
-# In[42]:
+# In[28]:
 
 
 ### TODO: 从另一个预训练的CNN获取bottleneck特征
@@ -655,9 +703,14 @@ test_Resnet50 = bottleneck_features['test']
 # 
 # __回答:__ 
 # 
+# 模型使用一个ResNet50预训练模型，在此预训练模型的输出添加全局平均池化层，使用带有softmax激活函数的全连接层作为最终输出层。
 # 
+# ResNet是一个50层的CNN网络，并且使用残差网络来避免层次过深后出现训练精度下降的问题。使用残差网络，在反向传递过程中，较浅层的网络参数也能得到有效更新。此前使用的VGG16预训练模型则没有使用残差网络。
+# ResNet在ImageNet数据集训练和测试中取得非常好的结果，这里我们加载了Keras中提供的50层ResNet的预训练模型的权重数据，在此基础上进行全局平均池化和softmax全链层输出。
+# 
+# 使用该预训练模型，我们可以直接获取模型的训练数据，并不需为此付出计算和时间资源。
 
-# In[43]:
+# In[29]:
 
 
 ### TODO: 定义你的框架
@@ -668,7 +721,7 @@ Resnet50_model.add(Dense(133, activation='softmax'))
 Resnet50_model.summary()
 
 
-# In[44]:
+# In[30]:
 
 
 ### TODO: 编译模型
@@ -688,19 +741,42 @@ Resnet50_model.compile(loss='categorical_crossentropy', optimizer='rmsprop', met
 # 当然，你也可以对训练集进行 [数据增强](https://blog.keras.io/building-powerful-image-classification-models-using-very-little-data.html) 以优化模型的表现，不过这不是必须的步骤。
 # 
 
-# In[45]:
+# In[31]:
 
 
 ### TODO: 训练模型
 checkpointer = ModelCheckpoint(filepath='saved_models/weights.best.Resnet50.hdf5', 
                                verbose=1, save_best_only=True)
 
-Resnet50_model.fit(train_Resnet50, train_targets, 
+resnet_fit = Resnet50_model.fit(train_Resnet50, train_targets, 
           validation_data=(valid_Resnet50, valid_targets),
-          epochs=30, batch_size=20, callbacks=[checkpointer], verbose=1)
+          epochs=100, batch_size=20, callbacks=[checkpointer], verbose=1)
 
 
-# In[46]:
+# In[32]:
+
+
+# summarize history for accuracy
+plt.plot(resnet_fit.history['acc'])
+plt.plot(resnet_fit.history['val_acc'])
+plt.title('model accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper right')
+plt.show()
+# summarize history for loss
+plt.plot(resnet_fit.history['loss'])
+plt.plot(resnet_fit.history['val_loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper right')
+plt.show()
+
+
+# 从模型训练过程中精度和损失曲线可以看到,随着模型训练周期的增加，模型并没有取得更好的验证结果，甚至出现了过拟合。
+
+# In[33]:
 
 
 ### TODO: 加载具有最佳验证loss的模型权重
@@ -717,7 +793,7 @@ Resnet50_model.load_weights('saved_models/weights.best.Resnet50.hdf5')
 # 
 # 在狗图像的测试数据集上试用你的模型。确保测试准确率大于60%。
 
-# In[47]:
+# In[34]:
 
 
 ### TODO: 在测试集上计算分类准确率
@@ -751,7 +827,7 @@ print('Test accuracy: %.4f%%' % test_accuracy)
 # 
 # ### __问题 9:__
 
-# In[48]:
+# In[35]:
 
 
 ### TODO: 写一个函数，该函数将图像的路径作为输入
@@ -765,7 +841,7 @@ def predict_dog_breed(img_path):
     return dog_names[np.argmax(predicted_vector)].split('.')[1]
 
 
-# In[49]:
+# In[36]:
 
 
 predict_dog_breed('/data/dog_images/test/004.Akita/Akita_00244.jpg')
@@ -802,7 +878,7 @@ predict_dog_breed('/data/dog_images/test/004.Akita/Akita_00244.jpg')
 # ---
 # 
 
-# In[50]:
+# In[37]:
 
 
 ### TODO: 设计你的算法
@@ -824,7 +900,7 @@ def final_detector(img_path):
         
 
 
-# In[51]:
+# In[38]:
 
 
 img_path = '/data/dog_images/test/004.Akita/Akita_00244.jpg'
@@ -848,7 +924,7 @@ final_detector(img_path)
 # 1. 输出结果比你预想的要好吗 :) ？或者更糟 :( ？
 # 2. 提出至少三点改进你的模型的想法。
 
-# In[52]:
+# In[39]:
 
 
 ## TODO: 在你的电脑上，在步骤6中，至少在6张图片上运行你的算法。
@@ -860,31 +936,31 @@ img_paths = sorted(np.array(glob('FinalTest/**.jpg')))
 final_detector(img_paths[0])
 
 
-# In[53]:
+# In[40]:
 
 
 final_detector(img_paths[1])
 
 
-# In[54]:
+# In[41]:
 
 
 final_detector(img_paths[2])
 
 
-# In[55]:
+# In[42]:
 
 
 final_detector(img_paths[3])
 
 
-# In[56]:
+# In[43]:
 
 
 final_detector(img_paths[4])
 
 
-# In[57]:
+# In[44]:
 
 
 final_detector(img_paths[5])
@@ -894,7 +970,7 @@ final_detector(img_paths[5])
 # 
 # 进一步改进模型的方法：
 # 
-# 1.增加训练的epoch数量，由于计算量原因这里只用了30个epoch，增加epoch还有提升准确率的空间；
+# 1.在训练模型后面继续增加卷积网络，或者使用更深的ResNet152网络；
 # 
 # 2.使用图像增强来扩充训练集；
 # 
